@@ -9,44 +9,69 @@ import { MomentModule } from 'angular2-moment';
 	providers: [PlaysService]
 })
 
-export class GraphComponent implements OnInit {
+export class GraphComponent {
 	plays: any;
+	moyManchesByGame: number = 0;
 	players: any;
+	playersName: any;
 
 	constructor(private playService: PlaysService) {
 
-		this.plays = this.playService.getPlays();
-		this.players = this.playService.getPlayers();
+		this.playersName = ['ronan', 'alexis', 'guillaume'];
+
+		this.plays = [];
+
+		this.players = {};
+
+		for(var i of this.playersName) {
+
+			this.players[i] = {
+
+			};
+		}
+
+		this.playService.getPlays().subscribe((response) => {
+
+			this.plays = response.json();
+			console.log(this.plays);
+
+			this.makeCalculs();
+		});
 	}
 
+	makeCalculs() {
 
-	createPlay() {
-
-		let play = this.playService.getPlayTemplate();
-
-		play.timestamp = Date.now();
-		play.game = "bo3";
-		play.map = "Gorod Krovi";
-		play.manches = 24;
-
-		let player = this.playService.getPlayerTemplate();
-
-		player.name = "Ronan";
-		player.beginning.level = 34;
-		player.beginning.prestige = 0;
-		player.end.level = 2;
-		player.end.prestige = 1;
-		player.nbDeaths = 4;
-		player.nbRea = 3;
-		player.kills = 578;
-		player.headshots = 213;
-
-		play.players.push(player);
-
-		this.playService.createPlay(play);
+		this.calculMoyManches();
+		this.calculMoyDeathsByPlayer();
 	}
 
-	ngOnInit() {
+	calculMoyManches() {
+
+		this.plays.map((x) => {
+			this.moyManchesByGame += parseInt(x.manches);
+		});
+
+		this.moyManchesByGame = this.moyManchesByGame / this.plays.length;
 	}
 
+	calculMoyDeathsByPlayer() {
+
+		for (var i of this.playersName) {
+
+			this.players[i] = {
+				moyDeaths: 0
+			};
+
+			this.plays.map((x) => {
+				x.players.map((y) => {
+
+					if(y.name === i) {
+						this.players[i].moyDeaths += parseInt(y.nbDeaths);
+					}
+				});
+			});
+
+			this.players[i].moyDeaths = this.players[i].moyDeaths / this.plays.length;
+		}
+	}
 }

@@ -1,4 +1,4 @@
-<ul>
+<!-- <ul>
 	<li *ngFor="let play of plays">
 		<div>Map : {{ play.map }}</div>
 		<div>Manches : {{ play.manches }}</div>
@@ -17,5 +17,16 @@
 		</ul>
 	</li>
 </ul>
+ -->
+<div>Moyenne de manches par partie : {{ moyManchesByGame }}</div>
+
+<h2>Ronan</h2>
+<div>Nombre de morts moyen par partie : {{ players.ronan.moyDeaths }}</div>
+
+<h2>Alexis</h2>
+<div>Nombre de morts moyen par partie : {{ players.alexis.moyDeaths }}</div>
+
+<h2>Guillaume</h2>
+<div>Nombre de morts moyen par partie : {{ players.guillaume.moyDeaths }}</div>
 
 <a routerLink="/plays">Ajouter une partie</a>

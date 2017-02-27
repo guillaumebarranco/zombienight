@@ -117,6 +117,6 @@ export class PlaysService {
     }
 
     getPlays() {
-        return this.plays;
+        return this.http.get("http://localhost/guillaume/zombienightapi/serveur.php?function=getPlays");
     }
 }
