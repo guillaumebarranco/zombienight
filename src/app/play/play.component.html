@@ -16,7 +16,7 @@
 		<div class="form-group">
 			<label for="name">Map</label>
 			<select class="form-control" id="map" required [(ngModel)]="play.map" name="map">
-				<option *ngFor="let map of maps[play.game]" value="map.slug">{{ map.name }}</option>
+				<option *ngFor="let map of maps[play.game]" value="{{map.slug}}">{{ map.name }}</option>
 			</select>
 		</div>
 
@@ -53,45 +53,45 @@
 
 		<div class="form-group">
 			<label for="name">Kills</label>
-			<input type="number" class="form-control" id="kills" required [(ngModel)]="players[i].kills" name="kills">
+			<input type="number" class="form-control" id="kills{{i}}" required [(ngModel)]="players[i].kills" name="kills{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Morts</label>
-			<input type="number" class="form-control" id="nbDeaths" required [(ngModel)]="players[i].nbDeaths" name="nbDeaths">
+			<label for="nbDeaths">Morts</label>
+			<input type="number" class="form-control" id="nbDeaths{{i}}" required [(ngModel)]="players[i].nbDeaths" name="nbDeaths{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Headshots</label>
-			<input type="number" class="form-control" id="headshots" required [(ngModel)]="players[i].headshots" name="headshots">
+			<label for="headshots">Headshots</label>
+			<input type="number" class="form-control" id="headshots{{i}}" required [(ngModel)]="players[i].headshots" name="headshots{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Réanimations</label>
-			<input type="number" class="form-control" id="nbRea" required [(ngModel)]="players[i].nbRea" name="nbRea">
+			<label for="nbRea">Réanimations</label>
+			<input type="number" class="form-control" id="nbRea{{i}}" required [(ngModel)]="players[i].nbRea" name="nbRea{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Level de départ</label>
-			<input type="number" class="form-control" id="beginLevel" required [(ngModel)]="players[i].begin.level" name="beginLevel">
+			<label for="beginLevel">Level de départ</label>
+			<input type="number" class="form-control" id="beginLevel{{i}}" required [(ngModel)]="players[i].begin.level" name="beginLevel{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Prestige de départ</label>
-			<input type="number" class="form-control" id="beginPrestige" required [(ngModel)]="players[i].begin.prestige" name="beginPrestige">
+			<label for="beginPrestige">Prestige de départ</label>
+			<input type="number" class="form-control" id="beginPrestige{{i}}" required [(ngModel)]="players[i].begin.prestige" name="beginPrestige{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Level de fin</label>
-			<input type="number" class="form-control" id="endLevel" required [(ngModel)]="players[i].end.level" name="endLevel">
+			<label for="endLevel">Level de fin</label>
+			<input type="number" class="form-control" id="endLevel{{i}}" required [(ngModel)]="players[i].end.level" name="endLevel{{i}}">
 		</div>
 
 		<div class="form-group">
-			<label for="name">Prestige de fin</label>
-			<input type="number" class="form-control" id="endPrestige" required [(ngModel)]="players[i].end.prestige" name="endPrestige">
+			<label for="endPrestige">Prestige de fin</label>
+			<input type="number" class="form-control" id="endPrestige{{i}}" required [(ngModel)]="players[i].end.prestige" name="endPrestige{{i}}">
 		</div>
 		
 	</section>
- 	
+
  	<button type="submit" class="btn btn-success" (click)="createPlay()">Submit</button>
 </form>

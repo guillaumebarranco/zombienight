@@ -45,58 +45,48 @@ export class PlayComponent implements OnInit {
 			}
 		}
 
-		console.log(this.maps);
-
 		this.plays = this.playService.getPlays();
 
 		// FAKE
-		this.player = {
-			name :"Alexis",
-			begin: {
-				level : 0,
-				prestige : 0
-			},
-			end: {
-				level : 0,
-				prestige : 0
-			},
-			nbDeaths : 0,
-			nbRea : 0,
-			kills : 0,
-			headshots : 0
-		};
-
-		// FAKE
 		this.play = {
-			map: "Kino Der Toten",
-			manches: 0,
+			map: "five",
+			manches: 1,
 			game: "bo1"
 		};
 
 		this.players = [];
 
-		console.log(this.playersName.length);
-
 		for (let i = 0; i < this.playersName.length; ++i) {
-			this.players[i] = this.player;
-		}
 
-		console.log(this.players);
+			this.players[i] = {
+				name: this.playersName[i].toLowerCase(),
+				begin: {
+					level : 0,
+					prestige : 0
+				},
+				end: {
+					level : 0,
+					prestige : 0
+				},
+				nbDeaths : 0,
+				nbRea : 0,
+				kills : 0,
+				headshots : 0
+			};
+		}
 	}
 
 	onSubmit() { this.submitted = true; }
 
 	createPlay() {
 
-		let play = this.playService.getPlayTemplate();
-
-		console.log(this.player);
 		this.play.timestamp = Date.now();
-
-
-		this.play.players.push(this.player);
-
-		this.playService.createPlay(play);
+		this.play.players = this.players;
+		var test = this.playService.createPlay(this.play);
+		console.log(test);
+		test.subscribe((response) => {
+			console.log(response);
+		})
 	}
 
 	ngOnInit() {
