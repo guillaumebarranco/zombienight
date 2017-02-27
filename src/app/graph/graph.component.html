@@ -1,0 +1,21 @@
+<ul>
+	<li *ngFor="let play of plays">
+		<div>Map : {{ play.map }}</div>
+		<div>Manches : {{ play.manches }}</div>
+		<div>Datetime : {{ play.timestamp }}</div>
+
+		<ul>
+			<li *ngFor="let player of play.players">
+				<div> Nom : {{ player.name }}</div>
+				<div> Niveau au début : {{ player.beginningLevel }}</div>
+				<div> Niveau de fin : {{ player.endLevel }}</div>
+				<div> Nombre de morts : {{ player.nbDeaths }}</div>
+				<div> Nombre de réanimation : {{ player.nbRea }}</div>
+				<div> Kills : {{ player.kills }}</div>
+				<div> Headshots : {{ player.headshots }}</div>
+			</li>
+		</ul>
+	</li>
+</ul>
+
+<a routerLink="/plays">Ajouter une partie</a>
