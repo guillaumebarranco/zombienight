@@ -1,32 +1,16 @@
-<!-- <ul>
-	<li *ngFor="let play of plays">
-		<div>Map : {{ play.map }}</div>
-		<div>Manches : {{ play.manches }}</div>
-		<div>Datetime : {{ play.timestamp }}</div>
-
-		<ul>
-			<li *ngFor="let player of play.players">
-				<div> Nom : {{ player.name }}</div>
-				<div> Niveau au début : {{ player.beginningLevel }}</div>
-				<div> Niveau de fin : {{ player.endLevel }}</div>
-				<div> Nombre de morts : {{ player.nbDeaths }}</div>
-				<div> Nombre de réanimation : {{ player.nbRea }}</div>
-				<div> Kills : {{ player.kills }}</div>
-				<div> Headshots : {{ player.headshots }}</div>
-			</li>
-		</ul>
-	</li>
-</ul>
- -->
 <div>Moyenne de manches par partie : {{ moyManchesByGame }}</div>
 
-<h2>Ronan</h2>
-<div>Nombre de morts moyen par partie : {{ players.ronan.moyDeaths }}</div>
+<div *ngFor="let i of playersName">
+	<h2>{{ i }}</h2>
+	<div>Nombre de morts moyen par partie : {{ players[i].moyDeaths }}</div>
+	<div>Nombre de kills moyen par partie : {{ players[i].moyKills }}</div>
+	<div>Nombre de headshots moyen par partie : {{ players[i].moyHeadshots }}</div>
+	<div>Nombre de réanimations moyen par partie : {{ players[i].moyRea }}</div>
 
-<h2>Alexis</h2>
-<div>Nombre de morts moyen par partie : {{ players.alexis.moyDeaths }}</div>
-
-<h2>Guillaume</h2>
-<div>Nombre de morts moyen par partie : {{ players.guillaume.moyDeaths }}</div>
+	<div>Maximum de morts en une partie : {{ players[i].maxDeaths }}</div>
+	<div>Maximum de kills en une partie : {{ players[i].maxKills }}</div>
+	<div>Maximum de headshots en une partie : {{ players[i].maxHeadshots }}</div>
+	<div>Maximum de réanimations en une partie : {{ players[i].maxRea }}</div>
+</div>
 
 <a routerLink="/plays">Ajouter une partie</a>
