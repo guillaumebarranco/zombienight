@@ -1,6 +1,8 @@
 <div class="timeline">
 
-	<div class="element" *ngFor="let play of plays" [ngStyle]="getTopFromManches(play.manches)">
+	<div class="element" *ngFor="let play of plays" [ngStyle]="getElementPlayStyle(play)">
+		{{ play.timestamp | amDateFormat: 'HH:mm' }}
+		<br />
 		{{ play.mapString }}
 
 		<div class="round">
@@ -10,18 +12,21 @@
 </div>
 
 
-<div>Moyenne de manches par partie : {{ moyManchesByGame }}</div>
-<div>Map la plus jouée : {{ mapMorePlayed.name }} ({{ mapMorePlayed.count }} fois)</div>
+<div>Moyenne de manches par partie en moyenne : <b>{{ moyManchesByGame }}</b></div>
+<div>Map la plus jouée : {{ mapMorePlayed.name }} (<b>{{ mapMorePlayed.count }}</b> fois)</div>
+<div class="green">Maximum de kills en une partie : <b>{{ maxKillsInGame.count }}</b> par <b>{{ maxKillsInGame.name }}</b> sur la map <b>{{ maxKillsInGame.map }}</b></div>
+<div class="red">Maximum de morts en une partie : <b>{{ maxDeathsInGame.count }}</b> par <b>{{ maxDeathsInGame.name }}</b> sur la map <b>{{ maxDeathsInGame.map }}</b></div>
+<div>Nombre de secrets terminés: <b>{{ nbSecretsDone }}</b></div>
 
 <div *ngFor="let i of playersName">
 	<h2>{{ i }}</h2>
-	<div>Nombre de morts moyen par partie : {{ players[i].moyDeaths }}</div>
-	<div>Nombre de kills moyen par partie : {{ players[i].moyKills }}</div>
+	<div>Nombre de morts moyen par partie : <b>{{ players[i].moyDeaths }}</b></div>
+	<div>Nombre de kills moyen par partie : <b>{{ players[i].moyKills }}</b></div>
 	<div>Nombre de headshots moyen par partie : {{ players[i].moyHeadshots }}</div>
 	<div>Nombre de réanimations moyen par partie : {{ players[i].moyRea }}</div>
 
-	<div>Maximum de morts en une partie : {{ players[i].maxDeaths }}</div>
-	<div>Maximum de kills en une partie : {{ players[i].maxKills }}</div>
+	<div class="red">Maximum de morts en une partie : <b>{{ players[i].maxDeaths }}</b></div>
+	<div class="green">Maximum de kills en une partie : <b>{{ players[i].maxKills }}</b></div>
 	<div>Maximum de headshots en une partie : {{ players[i].maxHeadshots }}</div>
 	<div>Maximum de réanimations en une partie : {{ players[i].maxRea }}</div>
 </div>

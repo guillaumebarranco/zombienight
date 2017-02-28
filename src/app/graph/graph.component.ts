@@ -22,6 +22,17 @@ function round(value, exp) {
 	return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
 }
 
+function mapName(map) {
+	map = map.replace(/_/g, " ");
+	map = ucFirst(map);
+
+	return map;
+}
+
+function ucFirst(str) {
+	return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+} 
+
 @Component({
 	selector: 'app-graph',
 	templateUrl: './graph.component.html',
@@ -36,6 +47,9 @@ export class GraphComponent {
 	playersName: any;
 	playMaxManches: number = 0;
 	mapMorePlayed: any = {};
+	maxKillsInGame: any = {};
+	maxDeathsInGame: any = {};
+	nbSecretsDone: number = 0;
 
 	constructor(private playService: PlaysService) {
 
@@ -66,9 +80,26 @@ export class GraphComponent {
 
 		const topString = top.toString()+"px";
 
-		return {
-			top: topString
+		return topString;
+	}
+
+	getElementPlayStyle(play) {
+
+		const styles = {
+			'top': "",
+			'color': "#000",
+			'font-weight': "normal"
+
 		};
+
+		styles.top = this.getTopFromManches(play.manches);
+
+		if(parseInt(play.secret) === 1) {
+			styles.color = "green";
+			styles['font-weight'] = "bold";
+		}
+
+		return styles;
 	}
 
 	makeCalculs() {
@@ -77,6 +108,7 @@ export class GraphComponent {
 		this.calculMoyManches();
 		this.calculPlayMaxManches();
 		this.calculMapMorePlayed();
+		this.calculSecretsDone();
 
 		this.calculMoyDeathsByPlayer();
 		this.calculMoyKillsByPlayer();
@@ -94,7 +126,7 @@ export class GraphComponent {
 	createMapStrings() {
 
 		this.plays.map((x) => {
-			x.mapString = x.map.replace(/_/g, " ");
+			x.mapString = mapName(x.map);
 		});
 	}
 
@@ -147,7 +179,23 @@ export class GraphComponent {
 		}
 	}
 
+	calculSecretsDone() {
+
+		this.plays.map((x) => {
+
+			if(parseInt(x.secret) === 1) {
+				++this.nbSecretsDone;
+			}
+		});		
+	}
+
 	calculMoyDeathsByPlayer() {
+
+		this.maxDeathsInGame = {
+			name: "",
+			count: 0,
+			map: ""
+		};
 
 		for (var i of this.playersName) {
 
@@ -159,6 +207,15 @@ export class GraphComponent {
 					if(y.name === i) {
 						this.players[i].moyDeaths += parseInt(y.nbDeaths);
 					}
+
+					if(y.nbDeaths > this.maxDeathsInGame.count) {
+
+						this.maxDeathsInGame = {
+							name: ucFirst(y.name),
+							count: y.nbDeaths,
+							map: mapName(x.map)
+						};
+					}
 				});
 			});
 
@@ -167,6 +224,12 @@ export class GraphComponent {
 	}
 
 	calculMoyKillsByPlayer() {
+
+		this.maxKillsInGame = {
+			name: "",
+			count: 0,
+			map: ""
+		};
 
 		for (var i of this.playersName) {
 
@@ -177,6 +240,15 @@ export class GraphComponent {
 
 					if(y.name === i) {
 						this.players[i].moyKills += parseInt(y.kills);
+					}
+
+					if(y.kills > this.maxKillsInGame.count) {
+
+						this.maxKillsInGame = {
+							name: ucFirst(y.name),
+							count: y.kills,
+							map: mapName(x.map)
+						};
 					}
 				});
 			});
