@@ -1,4 +1,17 @@
+<div class="timeline">
+
+	<div class="element" *ngFor="let play of plays" [ngStyle]="getTopFromManches(play.manches)">
+		{{ play.mapString }}
+
+		<div class="round">
+			{{ play.manches }}
+		</div>
+	</div>
+</div>
+
+
 <div>Moyenne de manches par partie : {{ moyManchesByGame }}</div>
+<div>Map la plus jouée : {{ mapMorePlayed.name }} ({{ mapMorePlayed.count }} fois)</div>
 
 <div *ngFor="let i of playersName">
 	<h2>{{ i }}</h2>

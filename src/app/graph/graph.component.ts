@@ -2,6 +2,26 @@ import { Component, OnInit } from '@angular/core';
 import { PlaysService } from '../plays.service';
 import { MomentModule } from 'angular2-moment';
 
+function round(value, exp) {
+	// Si la valeur de exp n'est pas définie ou vaut zéro...
+	if (typeof exp === 'undefined' || +exp === 0) {
+	return Math['round'](value);
+	}
+	value = +value;
+	exp = +exp;
+	// Si la valeur n'est pas un nombre 
+	// ou si exp n'est pas un entier...
+	if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+	return NaN;
+	}
+	// Décalage
+	value = value.toString().split('e');
+	value = Math['round'](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+	// Décalage inversé
+	value = value.toString().split('e');
+	return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+}
+
 @Component({
 	selector: 'app-graph',
 	templateUrl: './graph.component.html',
@@ -14,6 +34,8 @@ export class GraphComponent {
 	moyManchesByGame: number = 0;
 	players: any;
 	playersName: any;
+	playMaxManches: number = 0;
+	mapMorePlayed: any = {};
 
 	constructor(private playService: PlaysService) {
 
@@ -34,9 +56,27 @@ export class GraphComponent {
 		});
 	}
 
+	getTopFromManches(manches) {
+
+		let top = 0;
+
+		top = this.playMaxManches / manches * 50;
+
+		if(top > 400) top = 400;
+
+		const topString = top.toString()+"px";
+
+		return {
+			top: topString
+		};
+	}
+
 	makeCalculs() {
 
+		this.createMapStrings();
 		this.calculMoyManches();
+		this.calculPlayMaxManches();
+		this.calculMapMorePlayed();
 
 		this.calculMoyDeathsByPlayer();
 		this.calculMoyKillsByPlayer();
@@ -51,13 +91,60 @@ export class GraphComponent {
 		console.log(this.players);
 	}
 
+	createMapStrings() {
+
+		this.plays.map((x) => {
+			x.mapString = x.map.replace(/_/g, " ");
+		});
+	}
+
 	calculMoyManches() {
 
 		this.plays.map((x) => {
 			this.moyManchesByGame += parseInt(x.manches);
 		});
 
-		this.moyManchesByGame = this.moyManchesByGame / this.plays.length;
+		this.moyManchesByGame = round(this.moyManchesByGame / this.plays.length, -1);
+	}
+
+	calculPlayMaxManches() {
+
+		this.plays.map((x) => {
+
+			if(parseInt(x.manches) > this.playMaxManches) {
+				this.playMaxManches = parseInt(x.manches);
+			}
+		});
+	}
+
+	calculMapMorePlayed() {
+
+		let mapsPlays = [];
+
+		this.mapMorePlayed = {
+			name: "",
+			count: 0
+		};
+
+		this.plays.map((x) => {
+
+			if(typeof mapsPlays[x.map] === "undefined") {
+				mapsPlays[x.map] = 1;
+			} else {
+				mapsPlays[x.map] = mapsPlays[x.map] + 1;
+			}
+		});
+
+		for(let i in mapsPlays) {
+
+			if(mapsPlays[i] > this.mapMorePlayed.count) {
+
+				this.mapMorePlayed = {
+					name: i,
+					count: mapsPlays[i]
+				};
+			}
+		}
 	}
 
 	calculMoyDeathsByPlayer() {
@@ -75,7 +162,7 @@ export class GraphComponent {
 				});
 			});
 
-			this.players[i].moyDeaths = this.players[i].moyDeaths / this.plays.length;
+			this.players[i].moyDeaths = round(this.players[i].moyDeaths / this.plays.length, -1);
 		}
 	}
 
