@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { PlaysService } from '../plays.service';
-import { Player }    from '../classes/Player';
 
 @Component({
 	selector: 'app-play',
