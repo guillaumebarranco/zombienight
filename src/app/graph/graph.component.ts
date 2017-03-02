@@ -366,12 +366,14 @@ export class GraphComponent {
 		for (var i of this.playersName) {
 
 			this.players[i].maxDeaths = 0;
+			this.players[i].totalDeaths = 0;
 
 			this.plays.map((x) => {
 				x.players.map((y) => {
 
 					if(y.name === i && parseInt(y.nbDeaths) > this.players[i].maxDeaths) {
 						this.players[i].maxDeaths = parseInt(y.nbDeaths);
+						this.players[i].totalDeaths += parseInt(y.nbDeaths);
 					}
 				});
 			});
@@ -383,12 +385,14 @@ export class GraphComponent {
 		for (var i of this.playersName) {
 
 			this.players[i].maxHeadshots = 0;
+			this.players[i].totalHeadshots = 0;
 
 			this.plays.map((x) => {
 				x.players.map((y) => {
 
 					if(y.name === i && parseInt(y.headshots) > this.players[i].maxHeadshots) {
 						this.players[i].maxHeadshots = parseInt(y.headshots);
+						this.players[i].totalHeadshots += parseInt(y.headshots);
 					}
 				});
 			});
@@ -400,12 +404,14 @@ export class GraphComponent {
 		for (var i of this.playersName) {
 
 			this.players[i].maxRea = 0;
+			this.players[i].totalRea = 0;
 
 			this.plays.map((x) => {
 				x.players.map((y) => {
 
 					if(y.name === i && parseInt(y.nbRea) > this.players[i].maxRea) {
 						this.players[i].maxRea = parseInt(y.nbRea);
+						this.players[i].totalRea += parseInt(y.nbRea);
 					}
 				});
 			});
