@@ -99,7 +99,7 @@ export class PlaysService {
         let options       = new RequestOptions({ headers: headers }); // Create a request option
 
         var requestoptions = new RequestOptions({
-            url: "http://localhost/zombienightapi/serveur.php?function=createPlay",
+            url: "http://zombienightapi.webarranco.fr/serveur.php?function=createPlay",
             headers: headers,
             body: JSON.stringify(play)
         })
@@ -109,7 +109,7 @@ export class PlaysService {
         // play = JSON.stringify(play);
         // console.log(play);
 
-        return this.http.post("http://localhost/zombienightapi/serveur.php?function=createPlay", play, requestoptions)
+        return this.http.post("http://zombienightapi.webarranco.fr/serveur.php?function=createPlay", play, requestoptions)
             .map((res:Response) => {
                 console.log(res.json());
             })
@@ -117,6 +117,6 @@ export class PlaysService {
     }
 
     getPlays() {
-        return this.http.get("http://localhost/zombienightapi/serveur.php?function=getPlays");
+        return this.http.get("http://zombienightapi.webarranco.fr/serveur.php?function=getPlays");
     }
 }
