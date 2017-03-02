@@ -347,12 +347,14 @@ export class GraphComponent {
 		for (var i of this.playersName) {
 
 			this.players[i].maxKills = 0;
+			this.players[i].totalKills = 0;
 
 			this.plays.map((x) => {
 				x.players.map((y) => {
 
 					if(y.name === i && parseInt(y.kills) > this.players[i].maxKills) {
 						this.players[i].maxKills = parseInt(y.kills);
+						this.players[i].totalKills += parseInt(y.kills);
 					}
 				});
 			});
