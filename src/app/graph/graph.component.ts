@@ -102,8 +102,11 @@ export class GraphComponent {
 		const styles = {
 			'top': "",
 			'color': "#000",
-			'font-weight': "normal"
-
+			'font-weight': "normal",
+			'background-image': "",
+			'background-size': "",
+			'background-repeat': "",
+			'background-position': ""
 		};
 
 		styles.top = this.getTopFromManches(play.manches);
@@ -111,6 +114,13 @@ export class GraphComponent {
 		if(parseInt(play.secret) === 1) {
 			styles.color = "green";
 			styles['font-weight'] = "bold";
+		}
+
+		if(parseInt(play.music) === 1) {
+			styles['background-image'] = "url(http://www.freeiconspng.com/uploads/audio-music-notation-note-notes-icon-9.png)";
+			styles['background-size'] = "25px";
+			styles['background-repeat'] = "no-repeat";
+			styles['background-position'] = "50px 0px";
 		}
 
 		return styles;
