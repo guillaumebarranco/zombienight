@@ -49,7 +49,11 @@ export class GraphComponent {
 	mapMorePlayed: any = {};
 	maxKillsInGame: any = {};
 	maxDeathsInGame: any = {};
+	maxReaInGame: any = {};
+	maxHeadInGame: any = {};
 	nbSecretsDone: number = 0;
+	bestRatioKillDead: any = {};
+	bestRatioKillHeadshot: any = {};
 
 	constructor(private playService: PlaysService) {
 
@@ -74,13 +78,23 @@ export class GraphComponent {
 
 		let top = 0;
 
-		top = this.playMaxManches / manches * 50;
+		top = this.playMaxManches / manches * 200;
 
-		if(top > 400) top = 400;
+		if(top > 600) top = 600;
 
 		const topString = top.toString()+"px";
 
 		return topString;
+	}
+
+	getLinePosition() {
+
+		let top = this.playMaxManches / this.moyManchesByGame * 200;
+		top+=80;
+
+		return {
+			top: top.toString()+"px"
+		};
 	}
 
 	getElementPlayStyle(play) {
@@ -119,6 +133,9 @@ export class GraphComponent {
 		this.processMaxDeathsByPlayers();
 		this.processMaxHeadshotsByPlayers();
 		this.processMaxReaByPlayers();
+
+		this.calculBestRatioKillDead();
+		this.calculBestRatioKillHeadshot();
 
 		console.log(this.players);
 	}
@@ -172,7 +189,7 @@ export class GraphComponent {
 			if(mapsPlays[i] > this.mapMorePlayed.count) {
 
 				this.mapMorePlayed = {
-					name: i,
+					name: mapName(i),
 					count: mapsPlays[i]
 				};
 			}
@@ -208,11 +225,11 @@ export class GraphComponent {
 						this.players[i].moyDeaths += parseInt(y.nbDeaths);
 					}
 
-					if(y.nbDeaths > this.maxDeathsInGame.count) {
+					if(parseInt(y.nbDeaths) > this.maxDeathsInGame.count) {
 
 						this.maxDeathsInGame = {
 							name: ucFirst(y.name),
-							count: y.nbDeaths,
+							count: parseInt(y.nbDeaths),
 							map: mapName(x.map)
 						};
 					}
@@ -242,11 +259,11 @@ export class GraphComponent {
 						this.players[i].moyKills += parseInt(y.kills);
 					}
 
-					if(y.kills > this.maxKillsInGame.count) {
+					if(parseInt(y.kills) > this.maxKillsInGame.count) {
 
 						this.maxKillsInGame = {
 							name: ucFirst(y.name),
-							count: y.kills,
+							count: parseInt(y.kills),
 							map: mapName(x.map)
 						};
 					}
@@ -258,6 +275,12 @@ export class GraphComponent {
 	}
 
 	calculMoyHeadshotsByPlayer() {
+		
+		this.maxHeadInGame = {
+			name: "",
+			count: 0,
+			map: ""
+		};
 
 		for (var i of this.playersName) {
 
@@ -269,6 +292,15 @@ export class GraphComponent {
 					if(y.name === i) {
 						this.players[i].moyHeadshots += parseInt(y.headshots);
 					}
+
+					if(parseInt(y.headshots) > this.maxHeadInGame.count) {
+
+						this.maxHeadInGame = {
+							name: ucFirst(y.name),
+							count: parseInt(y.headshots),
+							map: mapName(x.map)
+						};
+					}
 				});
 			});
 
@@ -277,6 +309,12 @@ export class GraphComponent {
 	}
 
 	calculMoyReaByPlayer() {
+
+		this.maxReaInGame = {
+			name: "",
+			count: 0,
+			map: ""
+		};
 
 		for (var i of this.playersName) {
 
@@ -287,6 +325,15 @@ export class GraphComponent {
 
 					if(y.name === i) {
 						this.players[i].moyRea += parseInt(y.nbRea);
+					}
+
+					if(parseInt(y.nbRea) > this.maxReaInGame.count) {
+
+						this.maxReaInGame = {
+							name: ucFirst(y.name),
+							count: parseInt(y.nbRea),
+							map: mapName(x.map)
+						};
 					}
 				});
 			});
@@ -360,6 +407,86 @@ export class GraphComponent {
 					}
 				});
 			});
+		}
+	}
+
+	calculBestRatioKillDead() {
+
+		const players = [];
+
+		this.bestRatioKillDead = {
+			name: "",
+			count: 0
+		};
+
+		this.plays.map((x) => {
+
+			x.players.map((y) => {
+
+				if(typeof players[y.name] !== "undefined") {
+					players[y.name].totalKills += parseInt(y.kills);
+					players[y.name].totalDeaths += parseInt(y.nbDeaths);
+
+				} else {
+					players[y.name] = {
+						totalKills: 0,
+						totalDeaths: 0
+					};
+				}
+			});
+		});
+
+		for(var i in players) {
+			players[i].ratio = round(players[i].totalKills / players[i].totalDeaths, 0);
+			this.players[i].ratioKillDeath = players[i].ratio;
+
+			if(players[i].ratio > this.bestRatioKillDead.count) {
+
+				this.bestRatioKillDead = {
+					name: ucFirst(i),
+					count: players[i].ratio
+				};
+			}
+		}
+	}
+
+	calculBestRatioKillHeadshot() {
+
+		const players = [];
+
+		this.bestRatioKillHeadshot = {
+			name: "",
+			count: 100
+		};
+
+		this.plays.map((x) => {
+
+			x.players.map((y) => {
+
+				if(typeof players[y.name] !== "undefined") {
+					players[y.name].totalKills += parseInt(y.kills);
+					players[y.name].totalHeadshots += parseInt(y.headshots);
+
+				} else {
+					players[y.name] = {
+						totalKills: 0,
+						totalHeadshots: 0
+					};
+				}
+			});
+		});
+
+		for(var i in players) {
+			players[i].ratio = round(players[i].totalKills / players[i].totalHeadshots, -1);
+			this.players[i].ratioKillHeadshot = players[i].ratio;
+
+			if(players[i].ratio < this.bestRatioKillHeadshot.count) {
+
+				this.bestRatioKillHeadshot = {
+					name: ucFirst(i),
+					count: players[i].ratio
+				};
+			}
 		}
 	}
 }

@@ -3,8 +3,16 @@
 	margin-top: 50px;
 	margin-bottom: 100px;
 	position: relative;
-	top: -100px;
-	height: 400px;
+	top: -200px;
+	height: 600px;
+}
+
+.line {
+	width: 90vw;
+	height: 2px;
+	background-color: black;
+	position: absolute;
+	top: 200px;
 }
 
 .element {

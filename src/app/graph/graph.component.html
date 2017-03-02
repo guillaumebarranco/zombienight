@@ -1,5 +1,7 @@
 <div class="timeline">
 
+	<div class="line" [ngStyle]="getLinePosition()"></div>
+
 	<div class="element" *ngFor="let play of plays" [ngStyle]="getElementPlayStyle(play)">
 		{{ play.timestamp | amDateFormat: 'HH:mm' }}
 		<br />
@@ -11,12 +13,24 @@
 	</div>
 </div>
 
-
+<div>Nombre de parties jouées : <b>{{ plays.length }}</b></div>
 <div>Moyenne de manches par partie en moyenne : <b>{{ moyManchesByGame }}</b></div>
 <div>Map la plus jouée : {{ mapMorePlayed.name }} (<b>{{ mapMorePlayed.count }}</b> fois)</div>
+<div>Nombre de secrets terminés: <b>{{ nbSecretsDone }}</b></div>
+
+<br>
+
 <div class="green">Maximum de kills en une partie : <b>{{ maxKillsInGame.count }}</b> par <b>{{ maxKillsInGame.name }}</b> sur la map <b>{{ maxKillsInGame.map }}</b></div>
 <div class="red">Maximum de morts en une partie : <b>{{ maxDeathsInGame.count }}</b> par <b>{{ maxDeathsInGame.name }}</b> sur la map <b>{{ maxDeathsInGame.map }}</b></div>
-<div>Nombre de secrets terminés: <b>{{ nbSecretsDone }}</b></div>
+<div class="green">Maximum de headshots en une partie : <b>{{ maxHeadInGame.count }}</b> par <b>{{ maxHeadInGame.name }}</b> sur la map <b>{{ maxHeadInGame.map }}</b></div>
+<div class="green">Maximum de réanimations en une partie : <b>{{ maxReaInGame.count }}</b> par <b>{{ maxReaInGame.name }}</b> sur la map <b>{{ maxReaInGame.map }}</b></div>
+
+<br>
+
+
+<div>Le joueur avec le meilleur ratio tués/morts est <b>{{ bestRatioKillDead.name }}</b> avec un ratio de <b>{{ bestRatioKillDead.count }}</b></div>
+<div>Le joueur avec le meilleur ratio tués/headshots est <b>{{ bestRatioKillHeadshot.name }}</b> avec un ratio de <b>{{ bestRatioKillHeadshot.count }}</b></div>
+
 
 <div *ngFor="let i of playersName">
 	<h2>{{ i }}</h2>
@@ -25,10 +39,17 @@
 	<div>Nombre de headshots moyen par partie : {{ players[i].moyHeadshots }}</div>
 	<div>Nombre de réanimations moyen par partie : {{ players[i].moyRea }}</div>
 
+	<br>
+
 	<div class="red">Maximum de morts en une partie : <b>{{ players[i].maxDeaths }}</b></div>
 	<div class="green">Maximum de kills en une partie : <b>{{ players[i].maxKills }}</b></div>
 	<div>Maximum de headshots en une partie : {{ players[i].maxHeadshots }}</div>
 	<div>Maximum de réanimations en une partie : {{ players[i].maxRea }}</div>
+
+	<br>
+
+	<div>Ratio tués/morts : {{ players[i].ratioKillDeath }}</div>
+	<div>Ratio tués/headshots : {{ players[i].ratioKillHeadshot }}</div>
 </div>
 
 <a routerLink="/plays">Ajouter une partie</a>
