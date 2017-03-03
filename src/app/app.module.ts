@@ -10,11 +10,14 @@ import { AppComponent } from './app.component';
 import { GraphComponent } from './graph/graph.component';
 import { PlayComponent } from './play/play.component';
 
+import { CapitalizePipe } from './capitalize.pipe';
+
 @NgModule({
   declarations: [
     AppComponent,
     GraphComponent,
-    PlayComponent
+    PlayComponent,
+    CapitalizePipe
   ],
   imports: [
     BrowserModule,

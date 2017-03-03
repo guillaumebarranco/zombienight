@@ -31,7 +31,7 @@ function mapName(map) {
 
 function ucFirst(str) {
 	return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-} 
+}
 
 @Component({
 	selector: 'app-graph',
@@ -41,19 +41,20 @@ function ucFirst(str) {
 })
 
 export class GraphComponent {
-	plays: any;
-	moyManchesByGame: number = 0;
-	players: any;
-	playersName: any;
-	playMaxManches: number = 0;
-	mapMorePlayed: any = {};
-	maxKillsInGame: any = {};
-	maxDeathsInGame: any = {};
-	maxReaInGame: any = {};
-	maxHeadInGame: any = {};
-	nbSecretsDone: number = 0;
-	bestRatioKillDead: any = {};
-	bestRatioKillHeadshot: any = {};
+
+	plays 					: 				any;
+	moyManchesByGame		: 				number 		= 0;
+	players 				: 				any;
+	playersName 			: 				any;
+	playMaxManches			: 				number 		= 0;
+	mapMorePlayed 			: 				any 		= {};
+	maxKillsInGame 			: 				any 		= {};
+	maxDeathsInGame 		: 				any 		= {};
+	maxReaInGame 			: 				any 		= {};
+	maxHeadInGame 			: 				any 		= {};
+	nbSecretsDone			: 				number 		= 0;
+	bestRatioKillDead 		: 				any 		= {};
+	bestRatioKillHeadshot 	: 				any 		= {};
 
 	constructor(private playService: PlaysService) {
 
@@ -61,29 +62,28 @@ export class GraphComponent {
 		this.plays = [];
 		this.players = {};
 
-		for(var i of this.playersName) {
+		for(const i of this.playersName) {
 
 			this.players[i] = {
-				ratioKillDeath: 0,
-				ratioKillHeadshot: 0,
-				moyDeaths: 0,
-				moyKills: 0,
-				moyRea: 0,
-				moyHeadshots: 0,
-				maxKills: 0,
-				totalKills: 0,
-				maxDeaths: 0,
-				totalDeaths: 0,
-				maxHeadshots: 0,
-				totalHeadshots: 0,
-				maxRea: 0,
-				totalRea: 0
+				ratioKillDeath		: 0,
+				ratioKillHeadshot	: 0,
+				moyDeaths			: 0,
+				moyKills			: 0,
+				moyRea				: 0,
+				moyHeadshots		: 0,
+				maxKills			: 0,
+				totalKills			: 0,
+				maxDeaths			: 0,
+				totalDeaths			: 0,
+				maxHeadshots		: 0,
+				totalHeadshots		: 0,
+				maxRea				: 0,
+				totalRea			: 0
 			};
 		}
 
 		this.playService.getPlays().subscribe((response) => {
 			this.plays = response.json();
-			console.log(this.plays);
 			this.makeCalculs();
 		});
 	}
@@ -91,20 +91,16 @@ export class GraphComponent {
 	getTopFromManches(manches) {
 
 		let top = 0;
-
 		top = this.playMaxManches / manches * 200;
 
 		if(top > 600) top = 600;
 
-		const topString = top.toString()+"px";
-
-		return topString;
+		return top.toString()+"px";
 	}
 
 	getLinePosition() {
 
-		let top = this.playMaxManches / this.moyManchesByGame * 200;
-		top+=80;
+		let top = (this.playMaxManches / this.moyManchesByGame * 200) + 80;
 
 		return {
 			top: top.toString()+"px"
@@ -123,8 +119,6 @@ export class GraphComponent {
 			'background-position': ""
 		};
 
-		styles.top = this.getTopFromManches(play.manches);
-
 		if(parseInt(play.secret) === 1) {
 			styles.color = "green";
 			styles['font-weight'] = "bold";
@@ -137,15 +131,16 @@ export class GraphComponent {
 			styles['background-position'] = "50px 0px";
 		}
 
+		styles.top = this.getTopFromManches(play.manches);
+
 		return styles;
 	}
 
 	makeCalculs() {
 
-		// console.log(this.players);
-
 		this.plays.map((x) => {
-			x.mapString = this.createMapStrings(x);
+			x.mapString = mapName(x.map);
+
 			this.handleMoyManches(x);
 			this.calculPlayMaxManches(x);
 			this.calculSecretsDone(x);
@@ -154,20 +149,20 @@ export class GraphComponent {
 		this.calculMoyManches();
 		this.calculMapMorePlayed();
 
-		this.initMoyByPlayer();
+		this.initGlobalVariables();
 
 		for (var i of this.playersName) {
 
 			this.plays.map((x) => {
 				x.players.map((y) => {
 
-					console.log(y);
-
+					// Moyennes
 					this.calculMoyDeathsByPlayer(i, x, y);
 					this.calculMoyKillsByPlayer(i, x, y);
 					this.calculMoyHeadshotsByPlayer(i, x, y);
 					this.calculMoyReaByPlayer(i, x, y);
 
+					// Max
 					this.processMaxKillsByPlayers(i, x, y);
 					this.processMaxDeathsByPlayers(i, x, y);
 					this.processMaxHeadshotsByPlayers(i, x, y);
@@ -175,18 +170,14 @@ export class GraphComponent {
 				});
 			});
 
-			this.players[i].moyDeaths = round(this.players[i].moyDeaths / this.plays.length, -1);
-			this.players[i].moyKills = Math.floor(this.players[i].moyKills / this.plays.length);
-			this.players[i].moyHeadshots = Math.floor(this.players[i].moyHeadshots / this.plays.length);
-			this.players[i].moyRea = Math.floor(this.players[i].moyRea / this.plays.length);
+			this.players[i].moyDeaths 		= round(this.players[i].moyDeaths / this.plays.length, -1);
+			this.players[i].moyKills 		= round(this.players[i].moyKills / this.plays.length, 0);
+			this.players[i].moyHeadshots 	= round(this.players[i].moyHeadshots / this.plays.length, 0);
+			this.players[i].moyRea 			= round(this.players[i].moyRea / this.plays.length, 0);
 		}
 
 		this.calculBestRatioKillDead();
 		this.calculBestRatioKillHeadshot();
-	}
-
-	createMapStrings(x) {
-		return mapName(x.map);
 	}
 
 	handleMoyManches(x) {
@@ -241,36 +232,18 @@ export class GraphComponent {
 		}
 	}
 
-	initMoyByPlayer() {
+	initGlobalVariables() {
 
-		this.maxDeathsInGame = {
-			name: "",
-			count: 0,
-			map: ""
-		};
+		const globals = ["maxDeathsInGame", "maxKillsInGame", "maxHeadInGame", "maxReaInGame", "bestRatioKillDead"];
 
-		this.maxKillsInGame = {
-			name: "",
-			count: 0,
-			map: ""
-		};
+		for(const i of globals) {
 
-		this.maxHeadInGame = {
-			name: "",
-			count: 0,
-			map: ""
-		};
-
-		this.maxReaInGame = {
-			name: "",
-			count: 0,
-			map: ""
-		};
-
-		this.bestRatioKillDead = {
-			name: "",
-			count: 0
-		};
+			this[i] = {
+				name: "",
+				count: 0,
+				map: ""
+			}
+		}
 
 		this.bestRatioKillHeadshot = {
 			name: "",
@@ -396,6 +369,7 @@ export class GraphComponent {
 		});
 
 		for(var i in players) {
+
 			players[i].ratio = round(players[i].totalKills / players[i].totalDeaths, 0);
 			this.players[i].ratioKillDeath = players[i].ratio;
 

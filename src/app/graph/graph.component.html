@@ -33,7 +33,7 @@
 
 
 <div *ngFor="let i of playersName">
-	<h2>{{ i }}</h2>
+	<h2>{{ i | capitalize }}</h2>
 	<div>Nombre de morts moyen par partie : <b>{{ players[i].moyDeaths }}</b></div>
 	<div>Nombre de kills moyen par partie : <b>{{ players[i].moyKills }}</b></div>
 	<div>Nombre de headshots moyen par partie : {{ players[i].moyHeadshots }}</div>
