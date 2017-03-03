@@ -62,14 +62,28 @@ export class GraphComponent {
 		this.players = {};
 
 		for(var i of this.playersName) {
-			this.players[i] = {};
+
+			this.players[i] = {
+				ratioKillDeath: 0,
+				ratioKillHeadshot: 0,
+				moyDeaths: 0,
+				moyKills: 0,
+				moyRea: 0,
+				moyHeadshots: 0,
+				maxKills: 0,
+				totalKills: 0,
+				maxDeaths: 0,
+				totalDeaths: 0,
+				maxHeadshots: 0,
+				totalHeadshots: 0,
+				maxRea: 0,
+				totalRea: 0
+			};
 		}
 
 		this.playService.getPlays().subscribe((response) => {
-
 			this.plays = response.json();
 			console.log(this.plays);
-
 			this.makeCalculs();
 		});
 	}
@@ -128,52 +142,66 @@ export class GraphComponent {
 
 	makeCalculs() {
 
-		this.createMapStrings();
+		// console.log(this.players);
+
+		this.plays.map((x) => {
+			x.mapString = this.createMapStrings(x);
+			this.handleMoyManches(x);
+			this.calculPlayMaxManches(x);
+			this.calculSecretsDone(x);
+		});
+
 		this.calculMoyManches();
-		this.calculPlayMaxManches();
 		this.calculMapMorePlayed();
-		this.calculSecretsDone();
 
-		this.calculMoyDeathsByPlayer();
-		this.calculMoyKillsByPlayer();
-		this.calculMoyHeadshotsByPlayer();
-		this.calculMoyReaByPlayer();
+		this.initMoyByPlayer();
 
-		this.processMaxKillsByPlayers();
-		this.processMaxDeathsByPlayers();
-		this.processMaxHeadshotsByPlayers();
-		this.processMaxReaByPlayers();
+		for (var i of this.playersName) {
+
+			this.plays.map((x) => {
+				x.players.map((y) => {
+
+					console.log(y);
+
+					this.calculMoyDeathsByPlayer(i, x, y);
+					this.calculMoyKillsByPlayer(i, x, y);
+					this.calculMoyHeadshotsByPlayer(i, x, y);
+					this.calculMoyReaByPlayer(i, x, y);
+
+					this.processMaxKillsByPlayers(i, x, y);
+					this.processMaxDeathsByPlayers(i, x, y);
+					this.processMaxHeadshotsByPlayers(i, x, y);
+					this.processMaxReaByPlayers(i, x, y);
+				});
+			});
+
+			this.players[i].moyDeaths = round(this.players[i].moyDeaths / this.plays.length, -1);
+			this.players[i].moyKills = Math.floor(this.players[i].moyKills / this.plays.length);
+			this.players[i].moyHeadshots = Math.floor(this.players[i].moyHeadshots / this.plays.length);
+			this.players[i].moyRea = Math.floor(this.players[i].moyRea / this.plays.length);
+		}
 
 		this.calculBestRatioKillDead();
 		this.calculBestRatioKillHeadshot();
-
-		console.log(this.players);
 	}
 
-	createMapStrings() {
+	createMapStrings(x) {
+		return mapName(x.map);
+	}
 
-		this.plays.map((x) => {
-			x.mapString = mapName(x.map);
-		});
+	handleMoyManches(x) {
+		this.moyManchesByGame += parseInt(x.manches);
 	}
 
 	calculMoyManches() {
-
-		this.plays.map((x) => {
-			this.moyManchesByGame += parseInt(x.manches);
-		});
-
 		this.moyManchesByGame = round(this.moyManchesByGame / this.plays.length, -1);
 	}
 
-	calculPlayMaxManches() {
+	calculPlayMaxManches(x) {
 
-		this.plays.map((x) => {
-
-			if(parseInt(x.manches) > this.playMaxManches) {
-				this.playMaxManches = parseInt(x.manches);
-			}
-		});
+		if(parseInt(x.manches) > this.playMaxManches) {
+			this.playMaxManches = parseInt(x.manches);
+		}
 	}
 
 	calculMapMorePlayed() {
@@ -206,17 +234,14 @@ export class GraphComponent {
 		}
 	}
 
-	calculSecretsDone() {
+	calculSecretsDone(x) {
 
-		this.plays.map((x) => {
-
-			if(parseInt(x.secret) === 1) {
-				++this.nbSecretsDone;
-			}
-		});		
+		if(parseInt(x.secret) === 1) {
+			++this.nbSecretsDone;
+		}
 	}
 
-	calculMoyDeathsByPlayer() {
+	initMoyByPlayer() {
 
 		this.maxDeathsInGame = {
 			name: "",
@@ -224,101 +249,17 @@ export class GraphComponent {
 			map: ""
 		};
 
-		for (var i of this.playersName) {
-
-			this.players[i].moyDeaths = 0;
-
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i) {
-						this.players[i].moyDeaths += parseInt(y.nbDeaths);
-					}
-
-					if(parseInt(y.nbDeaths) > this.maxDeathsInGame.count) {
-
-						this.maxDeathsInGame = {
-							name: ucFirst(y.name),
-							count: parseInt(y.nbDeaths),
-							map: mapName(x.map)
-						};
-					}
-				});
-			});
-
-			this.players[i].moyDeaths = round(this.players[i].moyDeaths / this.plays.length, -1);
-		}
-	}
-
-	calculMoyKillsByPlayer() {
-
 		this.maxKillsInGame = {
 			name: "",
 			count: 0,
 			map: ""
 		};
 
-		for (var i of this.playersName) {
-
-			this.players[i].moyKills = 0;
-
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i) {
-						this.players[i].moyKills += parseInt(y.kills);
-					}
-
-					if(parseInt(y.kills) > this.maxKillsInGame.count) {
-
-						this.maxKillsInGame = {
-							name: ucFirst(y.name),
-							count: parseInt(y.kills),
-							map: mapName(x.map)
-						};
-					}
-				});
-			});
-
-			this.players[i].moyKills = Math.floor(this.players[i].moyKills / this.plays.length);
-		}
-	}
-
-	calculMoyHeadshotsByPlayer() {
-		
 		this.maxHeadInGame = {
 			name: "",
 			count: 0,
 			map: ""
 		};
-
-		for (var i of this.playersName) {
-
-			this.players[i].moyHeadshots = 0;
-
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i) {
-						this.players[i].moyHeadshots += parseInt(y.headshots);
-					}
-
-					if(parseInt(y.headshots) > this.maxHeadInGame.count) {
-
-						this.maxHeadInGame = {
-							name: ucFirst(y.name),
-							count: parseInt(y.headshots),
-							map: mapName(x.map)
-						};
-					}
-				});
-			});
-
-			this.players[i].moyHeadshots = Math.floor(this.players[i].moyHeadshots / this.plays.length);
-		}
-	}
-
-	calculMoyReaByPlayer() {
 
 		this.maxReaInGame = {
 			name: "",
@@ -326,116 +267,116 @@ export class GraphComponent {
 			map: ""
 		};
 
-		for (var i of this.playersName) {
+		this.bestRatioKillDead = {
+			name: "",
+			count: 0
+		};
 
-			this.players[i].moyRea = 0;
+		this.bestRatioKillHeadshot = {
+			name: "",
+			count: 100
+		};
+	}
 
-			this.plays.map((x) => {
-				x.players.map((y) => {
+	calculMoyDeathsByPlayer(i, x, y) {
 
-					if(y.name === i) {
-						this.players[i].moyRea += parseInt(y.nbRea);
-					}
+		if(y.name === i) {
+			this.players[i].moyDeaths += parseInt(y.nbDeaths);
+		}
 
-					if(parseInt(y.nbRea) > this.maxReaInGame.count) {
+		if(parseInt(y.nbDeaths) > this.maxDeathsInGame.count) {
 
-						this.maxReaInGame = {
-							name: ucFirst(y.name),
-							count: parseInt(y.nbRea),
-							map: mapName(x.map)
-						};
-					}
-				});
-			});
-
-			this.players[i].moyRea = Math.floor(this.players[i].moyRea / this.plays.length);
+			this.maxDeathsInGame = {
+				name: ucFirst(y.name),
+				count: parseInt(y.nbDeaths),
+				map: mapName(x.map)
+			};
 		}
 	}
 
-	processMaxKillsByPlayers() {
+	calculMoyKillsByPlayer(i, x, y) {
 
-		for (var i of this.playersName) {
+		if(y.name === i) {
+			this.players[i].moyKills += parseInt(y.kills);
+		}
 
-			this.players[i].maxKills = 0;
-			this.players[i].totalKills = 0;
+		if(parseInt(y.kills) > this.maxKillsInGame.count) {
 
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i && parseInt(y.kills) > this.players[i].maxKills) {
-						this.players[i].maxKills = parseInt(y.kills);
-						this.players[i].totalKills += parseInt(y.kills);
-					}
-				});
-			});
+			this.maxKillsInGame = {
+				name: ucFirst(y.name),
+				count: parseInt(y.kills),
+				map: mapName(x.map)
+			};
 		}
 	}
 
-	processMaxDeathsByPlayers() {
+	calculMoyHeadshotsByPlayer(i, x, y) {
 
-		for (var i of this.playersName) {
+		if(y.name === i) {
+			this.players[i].moyHeadshots += parseInt(y.headshots);
+		}
 
-			this.players[i].maxDeaths = 0;
-			this.players[i].totalDeaths = 0;
+		if(parseInt(y.headshots) > this.maxHeadInGame.count) {
 
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i && parseInt(y.nbDeaths) > this.players[i].maxDeaths) {
-						this.players[i].maxDeaths = parseInt(y.nbDeaths);
-						this.players[i].totalDeaths += parseInt(y.nbDeaths);
-					}
-				});
-			});
+			this.maxHeadInGame = {
+				name: ucFirst(y.name),
+				count: parseInt(y.headshots),
+				map: mapName(x.map)
+			};
 		}
 	}
 
-	processMaxHeadshotsByPlayers() {
+	calculMoyReaByPlayer(i, x, y) {
 
-		for (var i of this.playersName) {
+		if(y.name === i) {
+			this.players[i].moyRea += parseInt(y.nbRea);
+		}
 
-			this.players[i].maxHeadshots = 0;
-			this.players[i].totalHeadshots = 0;
+		if(parseInt(y.nbRea) > this.maxReaInGame.count) {
 
-			this.plays.map((x) => {
-				x.players.map((y) => {
-
-					if(y.name === i && parseInt(y.headshots) > this.players[i].maxHeadshots) {
-						this.players[i].maxHeadshots = parseInt(y.headshots);
-						this.players[i].totalHeadshots += parseInt(y.headshots);
-					}
-				});
-			});
+			this.maxReaInGame = {
+				name: ucFirst(y.name),
+				count: parseInt(y.nbRea),
+				map: mapName(x.map)
+			};
 		}
 	}
 
-	processMaxReaByPlayers() {
+	processMaxKillsByPlayers(i, x, y) {
 
-		for (var i of this.playersName) {
+		if(y.name === i && parseInt(y.kills) > this.players[i].maxKills) {
+			this.players[i].maxKills = parseInt(y.kills);
+			this.players[i].totalKills += parseInt(y.kills);
+		}
+	}
 
-			this.players[i].maxRea = 0;
-			this.players[i].totalRea = 0;
+	processMaxDeathsByPlayers(i, x, y) {
 
-			this.plays.map((x) => {
-				x.players.map((y) => {
+		if(y.name === i && parseInt(y.nbDeaths) > this.players[i].maxDeaths) {
+			this.players[i].maxDeaths = parseInt(y.nbDeaths);
+			this.players[i].totalDeaths += parseInt(y.nbDeaths);
+		}
+	}
 
-					if(y.name === i && parseInt(y.nbRea) > this.players[i].maxRea) {
-						this.players[i].maxRea = parseInt(y.nbRea);
-						this.players[i].totalRea += parseInt(y.nbRea);
-					}
-				});
-			});
+	processMaxHeadshotsByPlayers(i, x, y) {
+
+		if(y.name === i && parseInt(y.headshots) > this.players[i].maxHeadshots) {
+			this.players[i].maxHeadshots = parseInt(y.headshots);
+			this.players[i].totalHeadshots += parseInt(y.headshots);
+		}
+	}
+
+	processMaxReaByPlayers(i, x, y) {
+
+		if(y.name === i && parseInt(y.nbRea) > this.players[i].maxRea) {
+			this.players[i].maxRea = parseInt(y.nbRea);
+			this.players[i].totalRea += parseInt(y.nbRea);
 		}
 	}
 
 	calculBestRatioKillDead() {
 
 		const players = [];
-
-		this.bestRatioKillDead = {
-			name: "",
-			count: 0
-		};
 
 		this.plays.map((x) => {
 
@@ -471,11 +412,6 @@ export class GraphComponent {
 	calculBestRatioKillHeadshot() {
 
 		const players = [];
-
-		this.bestRatioKillHeadshot = {
-			name: "",
-			count: 100
-		};
 
 		this.plays.map((x) => {
 
